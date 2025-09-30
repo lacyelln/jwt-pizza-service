@@ -1,9 +1,8 @@
 const request = require('supertest');
 const app = require('../service');
-const { expectValidJwt, randomName, createAdminUser, createFakeFranchise } = require('./testUtils');
+const { expectValidJwt, createAdminUser } = require('./testUtils');
 
 let adminAuthToken;
-let testuserId = 1;
 let adminUser;
 
 

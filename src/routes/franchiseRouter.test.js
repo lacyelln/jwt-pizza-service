@@ -3,7 +3,6 @@ const app = require('../service');
 const { expectValidJwt, randomName, createAdminUser } = require('./testUtils');
 
 let adminAuthToken;
-let testuserId = 1;
 let adminUser;
 
 
