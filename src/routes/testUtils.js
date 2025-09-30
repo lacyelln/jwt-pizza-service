@@ -2,7 +2,7 @@ const { Role, DB } = require('../database/database.js');
 
 
 function expectValidJwt(potentialJwt) {
-  expect(potentialJwt).toMatch(/^[a-zA-Z0-9-]*.[a-zA-Z0-9-].[a-zA-Z0-9-_]$/);
+    expect(potentialJwt).toMatch(/^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/);
 }
 
 
