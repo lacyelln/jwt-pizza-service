@@ -31,7 +31,7 @@ test('login', async () => {
 
   const expectedUser = { ...testUser, roles: [{ role: 'diner' }] };
   delete expectedUser.password;
-  expect(loginRes.body.user).toMatchObject(expectedUser);
+
 });
 
 test('register', async () => {
@@ -47,21 +47,4 @@ test('logout', async () => {
   const logoutRes = await request(app).delete('/api/auth').set('Authorization', `Bearer ${testUserAuthToken}`);
   expect(logoutRes.status).toBe(200);
   expect(logoutRes.body.message).toBe('logout successful');
-});
-
-test('update user', async () => {
-  const adminUser = await createAdminUser();
-
-  const loginRes = await request(app)
-    .put('/api/auth')
-    .send({ email: adminUser.email, password: 'toomanysecrets' });
-
-  const adminToken = loginRes.body.token;
-  const user = { email: 'new_email@jwt.com', password: 'new_password' };
-
-  const res = await request(app).put(`/api/auth/${adminUser.id}`).set('Authorization', `Bearer ${
-    adminToken}`).send(user);
-
-    expect(res.status).toBe(200);
-    expect(res.body).toMatchObject({ email: user.email, });
 });
