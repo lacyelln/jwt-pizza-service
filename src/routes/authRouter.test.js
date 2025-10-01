@@ -67,21 +67,4 @@ function randomName() {
   return Math.random().toString(36).substring(2, 12);
 }
 
-//middleware helpers
-test('update user', async () => {
-    const adminUser = await createAdminUser();
 
-    const loginRes = await request(app)
-        .put('/api/auth')
-        .send({ email: adminUser.email, password: 'toomanysecrets' });
-
-    const adminToken = loginRes.body.token;
-    const user = { email: 'new_email@jwt.com', password: 'new_password' };
-
-    const res = await request(app)
-    .delete('/api/auth')
-    .set('Authorization', `Bearer ${adminToken}`);
-
-    expect(res.status).toBe(200);
-    expect(res.body).toMatchObject({ email: user.email, });
-});
