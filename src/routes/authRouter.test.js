@@ -1,7 +1,7 @@
 /* eslint-env jest */
 const request = require('supertest');
 const app = require('../service');
-const { expectValidJwt, createAdminUser } = require('./testUtils');
+const { expectValidJwt,  } = require('./testUtils');
 
 if (process.env.VSCODE_INSPECTOR_OPTIONS) {
   jest.setTimeout(60 * 1000 * 5); // 5 minutes
