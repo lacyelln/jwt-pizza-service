@@ -68,23 +68,20 @@ function randomName() {
 }
 
 //middleware helpers
-// middleware helpers
-test('authenticated request with valid token succeeds (logout as example)', async () => {
-  const adminUser = await createAdminUser();
+test('update user', async () => {
+    const adminUser = await createAdminUser();
 
-  // login admin
-  const loginRes = await request(app)
-    .put('/api/auth')
-    .send({ email: adminUser.email, password: 'toomanysecrets' });
+    const loginRes = await request(app)
+        .put('/api/auth')
+        .send({ email: adminUser.email, password: 'toomanysecrets' });
 
-  const adminToken = loginRes.body.token;
+    const adminToken = loginRes.body.token;
+    const user = { email: 'new_email@jwt.com', password: 'new_password' };
 
-  // call logout with valid token (this hits authenticateToken + clearAuth)
-  const res = await request(app)
+    const res = await request(app)
     .delete('/api/auth')
     .set('Authorization', `Bearer ${adminToken}`);
 
-  expect(res.status).toBe(200);
-  expect(res.body).toMatchObject({ message: 'logout successful' });
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ email: user.email, });
 });
-
