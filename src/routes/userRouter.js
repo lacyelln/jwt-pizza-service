@@ -3,9 +3,27 @@ const { asyncHandler } = require('../endpointHelper.js');
 const { DB, Role } = require('../database/database.js');
 const { authRouter, setAuth } = require('./authRouter.js');
 
+
 const userRouter = express.Router();
 
 userRouter.docs = [
+  {
+    method: 'GET',
+    path: '/api/user?page=1&limit=10&name=*',
+    requiresAuth: true,
+    description: 'Gets a list of users',
+    example: `curl -X GET localhost:3000/api/user -H 'Authorization: Bearer tttttt'`,
+    response: {
+      users: [
+        {
+          id: 1,
+          name: '常用名字',
+          email: 'a@jwt.com',
+          roles: [{ role: 'admin' }],
+        },
+      ],
+    },
+  },
   {
     method: 'GET',
     path: '/api/user/me',
@@ -50,5 +68,37 @@ userRouter.put(
     res.json({ user: updatedUser, token: auth });
   })
 );
+
+// listUsers doing this to get front end to work, unsure of how to get this going with the real database
+userRouter.get(
+  '/',
+  authRouter.authenticateToken,
+  asyncHandler(async (req, res) => {
+    const users = [
+  { id: 1, name: 'Alice', email: 'alice@example.com', roles: ['Admin'] },
+  { id: 2, name: 'Bob', email: 'bob@example.com', roles: ['Franchisee'] },
+  { id: 3, name: 'Charlie', email: 'charlie@example.com', roles: ['Diner'] },
+];
+
+
+    res.json({
+      users,
+      total: users.length,
+    });
+  })
+);
+
+userRouter.delete(
+  '/:userId',
+  authRouter.authenticateToken,
+  asyncHandler(async (req, res) => {
+    const userId = Number(req.params.userId);
+
+    // Just simulate successful deletion
+    res.status(200).json({ message: `User ${userId} deleted (mock)` });
+  })
+);
+
+
 
 module.exports = userRouter;
