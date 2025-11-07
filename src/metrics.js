@@ -154,9 +154,9 @@ setInterval(async () => {
 }, 5000);
 
 
-sendMetricToGrafana('another_test', Math.random() * 100, 'gauge', '%')
-  .then(() => console.log('✅ Sent test metric!'))
-  .catch(err => console.error('❌ Failed test metric:', err.message));
+// sendMetricToGrafana('another_test', Math.random() * 100, 'gauge', '%')
+//   .then(() => console.log('✅ Sent test metric!'))
+//   .catch(err => console.error('❌ Failed test metric:', err.message));
 
 
 async function sendMetricToGrafana(metricName, metricValue, type, unit) {
