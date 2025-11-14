@@ -5,7 +5,8 @@ const franchiseRouter = require('./routes/franchiseRouter.js');
 const userRouter = require('./routes/userRouter.js');
 const version = require('./version.json');
 const config = require('./config.js');
-const { requestTracker } = require("./metrics.js");
+const { requestTracker } = require("./metrics2.js");
+const logger = require("./logger.js");
 
 
 
@@ -13,6 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(setAuthUser);
 app.use(requestTracker);
+app.use(logger.httpLogger);
 app.get('/test', (req, res) => {
   res.send('hello');
 });
