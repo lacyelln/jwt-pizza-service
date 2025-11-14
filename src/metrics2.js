@@ -1,5 +1,5 @@
 const config = require('./config');
-console.log('Grafana metrics config:', config.metrics);
+// console.log('Grafana metrics config:', config.metrics);
 
 const axios = require('axios');
 const os = require('os');
@@ -81,7 +81,7 @@ function requestTracker(req, res, next) {
   const start = process.hrtime();
 
   res.on('finish', () => {
-    console.log('➡️ requestTracker triggered for:', req.method, req.url);  // 👈 ADD THIS
+    //console.log('➡️ requestTracker triggered for:', req.method, req.url);  // 👈 ADD THIS
 
     const [seconds, nanoseconds] = process.hrtime(start);
     const durationMs = (seconds * 1000) + (nanoseconds / 1e6);
@@ -120,7 +120,6 @@ setInterval(async () => {
   const memory = getMemoryUsagePercentage();
   const { revenue, pizzasSold } = recordPizzaSale(price);
   const failures = recordPizzaFailure();
-  fetch('http://localhost:3000/api/order/menu').catch(() => {});
   if (Math.random() < 0.5) {
     recordUserLogin();
   } else {
@@ -160,7 +159,6 @@ setInterval(async () => {
 
 
 async function sendMetricToGrafana(metricName, metricValue, type, unit) {
-  console.log(`Sending ${metricName}: ${metricValue}`);
   const metric = {
     resourceMetrics: [
       {
