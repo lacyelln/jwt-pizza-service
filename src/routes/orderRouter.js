@@ -84,7 +84,7 @@ orderRouter.post(
     const start = process.hrtime();
     try {
       const order = await DB.addDinerOrder(req.user, orderReq);
-      logger.log("info", "db", order);
+      logger.log("info", "db", {order});
       
       const factoryRequestBody = {
         diner: {

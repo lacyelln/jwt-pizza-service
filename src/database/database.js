@@ -18,7 +18,7 @@ class DB {
     const connection = await this.getConnection();
     try {
       const rows = await this.query(connection, `SELECT * FROM menu`);
-      logger.log(level, "database", rows);
+      logger.log(level, "database", {rows});
       return rows;
     } finally {
       connection.end();
@@ -56,7 +56,7 @@ class DB {
           }
         }
       }
-      logger.log(level, "database", user);
+      logger.log(level, "database", {user});
       return { ...user, id: userId, password: undefined };
     } finally {
       connection.end();
@@ -111,7 +111,7 @@ class DB {
     const connection = await this.getConnection();
     try {
       await this.query(connection, `INSERT INTO auth (token, userId) VALUES (?, ?) ON DUPLICATE KEY UPDATE token=token`, [token, userId]);
-      logger.log("info", "db", "logging in");
+      logger.log("info", "database", {userId, token});
     } finally {
       connection.end();
     }
@@ -168,7 +168,7 @@ class DB {
           description: item.description,
           price: item.price,
         };
-        logger.log(level, "database", logData);
+        logger.log(level, "database", {logData});
         }
 
       return { ...order, id: orderId };
