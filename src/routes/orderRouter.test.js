@@ -41,7 +41,7 @@ test('create order', async () => {
     const res = await request(app).post('/api/order')
     .set('Authorization', `Bearer ${adminAuthToken}`)
     .send(order);
-    // expect(res.status).toBe(200);
+    expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('order');
     expect(res.body).toHaveProperty('jwt');
     expect(res.body.order.items[0]).toHaveProperty('price', 0.05)

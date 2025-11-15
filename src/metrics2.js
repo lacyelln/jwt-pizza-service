@@ -215,4 +215,5 @@ module.exports = {
   requestTracker,
   recordUserLogin,
   recordUserLogout,
+  sendMetricToGrafana
 };
