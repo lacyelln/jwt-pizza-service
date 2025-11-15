@@ -4,19 +4,26 @@ const config = require('../config.js');
 const { StatusCodeError } = require('../endpointHelper.js');
 const { Role } = require('../model/model.js');
 const dbModel = require('./dbModel.js');
+const logger = require('../logger');  // adjust path as needed
+const level = "info";
+
 class DB {
   constructor() {
     this.initialized = this.initializeDatabase();
   }
 
+  
+
   async getMenu() {
     const connection = await this.getConnection();
     try {
       const rows = await this.query(connection, `SELECT * FROM menu`);
+      logger.log(level, "database", rows);
       return rows;
     } finally {
       connection.end();
     }
+    
   }
 
   async addMenuItem(item) {
@@ -49,6 +56,7 @@ class DB {
           }
         }
       }
+      logger.log(level, "database", user);
       return { ...user, id: userId, password: undefined };
     } finally {
       connection.end();
@@ -63,7 +71,6 @@ class DB {
       if (!user || (password && !(await bcrypt.compare(password, user.password)))) {
         throw new StatusCodeError('unknown user', 404);
       }
-
       const roleResult = await this.query(connection, `SELECT * FROM userRole WHERE userId=?`, [user.id]);
       const roles = roleResult.map((r) => {
         return { objectId: r.objectId || undefined, role: r.role };
@@ -104,6 +111,7 @@ class DB {
     const connection = await this.getConnection();
     try {
       await this.query(connection, `INSERT INTO auth (token, userId) VALUES (?, ?) ON DUPLICATE KEY UPDATE token=token`, [token, userId]);
+      logger.log("info", "db", "logging in");
     } finally {
       connection.end();
     }
@@ -153,7 +161,16 @@ class DB {
       for (const item of order.items) {
         const menuId = await this.getID(connection, 'id', item.menuId, 'menu');
         await this.query(connection, `INSERT INTO orderItem (orderId, menuId, description, price) VALUES (?, ?, ?, ?)`, [orderId, menuId, item.description, item.price]);
-      }
+        const logData = {
+          type: "db",
+          orderId: orderId,
+          menuId: menuId,
+          description: item.description,
+          price: item.price,
+        };
+        logger.log(level, "database", logData);
+        }
+
       return { ...order, id: orderId };
     } finally {
       connection.end();

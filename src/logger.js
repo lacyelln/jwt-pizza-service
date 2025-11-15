@@ -20,6 +20,7 @@ class Logger {
     next();
   };
 
+
   log(level, type, logData) {
     const labels = { component: config.logging.source, level: level, type: type };
     const values = [this.nowString(), this.sanitize(logData)];
@@ -43,28 +44,28 @@ class Logger {
     return logData.replace(/\\"password\\":\s*\\"[^"]*\\"/g, '\\"password\\": \\"*****\\"');
   }
 
-sendLogToGrafana(event) {
-  const body = JSON.stringify(event);
+  sendLogToGrafana(event) {
+    const body = JSON.stringify(event);
 
-  const authHeader = Buffer
-    .from(`${config.logging.userId}:${config.logging.apiKey}`)
-    .toString('base64');
+    const authHeader = Buffer
+      .from(`${config.logging.userId}:${config.logging.apiKey}`)
+      .toString('base64');
 
-  fetch(`${config.logging.url}`, {
-    method: 'POST',
-    body,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Basic ${authHeader}`,
-    },
-  }).then(res => {
-    if (!res.ok) {
-      res.text().then(txt => {
-        console.error('Failed to send log to Grafana:', res.status, txt);
-      });
-    }
-  }).catch(err => console.error("Fetch error:", err));
-}
+    fetch(`${config.logging.url}`, {
+      method: 'POST',
+      body,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${authHeader}`,
+      },
+    }).then(res => {
+      if (!res.ok) {
+        res.text().then(txt => {
+          console.error('Failed to send log to Grafana:', res.status, txt);
+        });
+      }
+    }).catch(err => console.error("Fetch error:", err));
+  }
 
 }
 module.exports = new Logger();

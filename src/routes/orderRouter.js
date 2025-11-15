@@ -4,6 +4,7 @@ const { Role, DB } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { asyncHandler, StatusCodeError } = require('../endpointHelper.js');
 const { sendMetricToGrafana } = require("../metrics2.js");
+const logger = require('../logger.js')
 
 const orderRouter = express.Router();
 
@@ -83,14 +84,30 @@ orderRouter.post(
     const start = process.hrtime();
     try {
       const order = await DB.addDinerOrder(req.user, orderReq);
+      logger.log("info", "db", order);
+      
+      const factoryRequestBody = {
+        diner: {
+          id: req.user.id,
+          name: req.user.name,
+          email: req.user.email,
+        },
+        order,
+      };
 
       const r = await fetch(`${config.factory.url}/api/order`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', authorization: `Bearer ${config.factory.apiKey}` },
-        body: JSON.stringify({ diner: { id: req.user.id, name: req.user.name, email: req.user.email }, order }),
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: `Bearer ${config.factory.apiKey}`,
+        },
+        body: JSON.stringify(factoryRequestBody),
       });
 
-      const j = await r.json();
+      const factoryResponseBody = await r.json();
+
+      logger.log("info", "pizza_factory_request_body", {factoryRequestBody});
+      logger.log("info", "pizza_factory_response_body",{factoryResponseBody});
 
       const [seconds, nanoseconds] = process.hrtime(start);
       const durationMs = (seconds * 1000) + (nanoseconds / 1e6);
@@ -107,6 +124,7 @@ orderRouter.post(
       res.status(500).send({ message: 'Order creation failed' });
     }
   })
+
 )
 
 module.exports = orderRouter;
