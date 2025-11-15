@@ -3,6 +3,7 @@ const config = require('../config.js');
 const { Role, DB } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { asyncHandler, StatusCodeError } = require('../endpointHelper.js');
+const { sendMetricToGrafana } = require("../metrics2.js");
 
 const orderRouter = express.Router();
 
@@ -82,7 +83,6 @@ orderRouter.post(
     const start = process.hrtime();
     try {
       const order = await DB.addDinerOrder(req.user, orderReq);
-      trackPizzaSale(order.items.reduce((sum, item) => sum + item.price, 0));
 
       const r = await fetch(`${config.factory.url}/api/order`, {
         method: 'POST',
@@ -100,12 +100,10 @@ orderRouter.post(
       if (r.ok) {
         res.send({ order, reportSlowPizzaToFactoryUrl: j.reportUrl, jwt: j.jwt });
       } else {
-        trackCreationFailure();
         res.status(500).send({ message: 'Failed to fulfill order at factory', reportPizzaCreationErrorToPizzaFactoryUrl: j.reportUrl });
       }
     } catch (err) {
-      console.error('🍕 Order creation error:', err);
-      trackCreationFailure();
+      console.error('Order creation error:', err);
       res.status(500).send({ message: 'Order creation failed' });
     }
   })
