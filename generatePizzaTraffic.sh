@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # Check if host is provided as a command line argument

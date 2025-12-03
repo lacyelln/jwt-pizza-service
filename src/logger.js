@@ -1,24 +1,41 @@
 const config = require('./config');
 
+// console.log("🚨 LOGGER.JS LOADED FROM:", __filename);
+
 class Logger {
-  httpLogger = (req, res, next) => {
-    let send = res.send;
-    res.send = (resBody) => {
-      const logData = {
-        authorized: !!req.headers.authorization,
-        path: req.originalUrl,
-        method: req.method,
-        statusCode: res.statusCode,
-        reqBody: JSON.stringify(req.body),
-        resBody: JSON.stringify(resBody),
-      };
-      const level = this.statusToLogLevel(res.statusCode);
-      this.log(level, 'http', logData);
-      res.send = send;
-      return res.send(resBody);
+  
+httpLogger = (req, res, next) => {
+  const originalSend = res.send;
+  const originalJson = res.json;
+
+  const doLog = (body) => {
+    const logData = {
+      authorized: !!req.headers.authorization,
+      path: req.originalUrl,
+      method: req.method,
+      statusCode: res.statusCode,
+      reqBody: JSON.stringify(req.body),
+      resBody: JSON.stringify(body),
     };
-    next();
+    const level = this.statusToLogLevel(res.statusCode);
+    this.log(level, 'http', logData);
   };
+
+  res.send = function (body) {
+    doLog(body);
+    return originalSend.call(this, body);
+  };
+
+  res.json = function (body) {
+    doLog(body);
+    return originalJson.call(this, body);
+  };
+
+  next();
+};
+
+
+
 
 
   log(level, type, logData) {

@@ -14,10 +14,11 @@ const app = express();
 app.use(express.json());
 app.use(setAuthUser);
 app.use(requestTracker);
-app.use(logger.httpLogger);
+
 app.get('/test', (req, res) => {
   res.send('hello');
 });
+// console.log("🚨 SERVICE.JS LOADED FROM:", __filename);
 
 
 app.use((req, res, next) => {
@@ -27,6 +28,20 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   next();
 });
+
+app.use(logger.httpLogger);
+
+app.get('/logtest', (req, res) => {
+  logger.log("info", "manual_test", {test: "hello"});
+  res.send("sent");
+});
+
+// app.use((req, res, next) => {
+//   console.log("🔥 Incoming traffic:", req.method, req.url);
+//   next();
+// });
+
+
 
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
@@ -50,6 +65,11 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+
 app.use('*', (req, res) => {
   res.status(404).json({
     message: 'unknown endpoint',
@@ -61,5 +81,6 @@ app.use((err, req, res, next) => {
   res.status(err.statusCode ?? 500).json({ message: err.message, stack: err.stack });
   next();
 });
+
 
 module.exports = app;

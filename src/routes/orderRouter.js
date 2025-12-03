@@ -115,10 +115,18 @@ orderRouter.post(
       sendMetricToGrafana('pizza_creation_latency', durationMs.toFixed(2), 'sum', 'ms');
   
       if (r.ok) {
-        res.send({ order, reportSlowPizzaToFactoryUrl: j.reportUrl, jwt: j.jwt });
+        res.send({
+          order,
+          reportSlowPizzaToFactoryUrl: factoryResponseBody.reportUrl,
+          jwt: factoryResponseBody.jwt
+        });
       } else {
-        res.status(500).send({ message: 'Failed to fulfill order at factory', reportPizzaCreationErrorToPizzaFactoryUrl: j.reportUrl });
+        res.status(500).send({
+          message: 'Failed to fulfill order at factory',
+          reportPizzaCreationErrorToPizzaFactoryUrl: factoryResponseBody.reportUrl
+        });
       }
+
     } catch (err) {
       console.error('Order creation error:', err);
       res.status(500).send({ message: 'Order creation failed' });
